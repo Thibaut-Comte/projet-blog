@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <h1>{{ block('title') }}</h1>
+
+    <div class="container">
+        {{ form_start(form) }}
+
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_label(form.username) }}
+                {{ form_widget(form.username) }}
+                {{ form_errors(form.username) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_label(form.image) }}
+                {{ form_widget(form.image) }}
+                {{ form_errors(form.image) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_label(form.firstName) }}
+                {{ form_widget(form.firstName) }}
+                {{ form_errors(form.firstName) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_label(form.lastName) }}
+                {{ form_widget(form.lastName) }}
+                {{ form_errors(form.lastName) }}
+            </div>
+        </div>
+
+        {{ form_widget(form.rawPassword) }}
+        {{ form_errors(form.rawPassword) }}
+
+        <p class="text-center">
+            <button class="btn btn-success">
+                <span class="fa fa-sign-in"></span> Inscription
+            </button>
+        </p>
+        {{ form_end(form) }}
+        <p class="text-center">
+            <a href="{{ path('app_security_login') }}">
+                <span class="fa fa-key"></span> Connexion
+            </a>
+        </p>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block body %}
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-12">
+
+                <h1 class="my-4">Toutes les categories</h1>
+
+                <a href="{{ path('app_categorie_add') }}" class="btn btn-info mb-1">Ajouter</a>
+
+
+                {% for categorie in categories %}
+
+                    {% set token = csrf_token('delete') %}
+                    <!-- Blog Post -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="card-title">{{ categorie.name|upper }} |
+                            <a href="{{ path('app_categorie_delete', {'id':categorie.id, 'token':token}) }}"
+                               class="btn btn-danger">Supprimer</a> |
+                            <a href="{{ path('app_categorie_update', {'id':categorie.id}) }}" class="btn btn-info">Modifier</a></p>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

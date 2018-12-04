@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Compte{% endblock %}
+
+{% block body %}
+    {% set token = csrf_token('delete_user') %}
+    <h1>{{ block('title') }}</h1>
+
+
+    <div class="container">
+
+        {% if user.image %}
+            <img style="width: 150px;height:  150px; margin-left: 43%" src="{{ asset(image_path ~ user.image) }}"
+                 alt="avatar">
+
+        {% else %}
+            <img style="width: 150px;height:  150px; margin-left: 43%" src="http://placehold.it/150x150" alt="avatar">
+        {% endif %}
+        {{ form_start(form) }}
+
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_label(form.username) }}
+                {{ form_widget(form.username) }}
+                {{ form_errors(form.username) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_label(form.image) }}
+                {{ form_widget(form.image) }}
+                {{ form_errors(form.image) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                {{ form_label(form.firstName) }}
+                {{ form_widget(form.firstName) }}
+                {{ form_errors(form.firstName) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_label(form.lastName) }}
+                {{ form_widget(form.lastName) }}
+                {{ form_errors(form.lastName) }}
+            </div>
+        </div>
+
+        {{ form_widget(form.rawPassword) }}
+        {{ form_errors(form.rawPassword) }}
+
+
+        <p class="text-center">
+            <button class="btn btn-success">
+                <span class="fa fa-sign-in"></span> Modifier
+            </button>
+            <a href="{{ path('app_security_delete', {'id':user.id, 'token':token}) }}" class="btn btn-danger">Suppimer mon Compte</a>
+        </p>
+
+        {{ form_end(form) }}
+
+        {% if user.products|length > 0 %}
+
+            <h3 style="text-align: center">Mes Produits</h3><br>
+
+
+            {% for product in user.products|sort %}
+                {% set token = csrf_token('delete_product') %}
+
+                <!-- Blog Post -->
+                <div class="card mb-4">
+                    {% if product.image %}
+                        <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                            <img style="height: 500px; width: 500px" class="card-img-top"
+                                 src="{{ asset(image_path ~ product.image) }}" alt="image produit">
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                            <img style="height: 500px; width: 500px" class="card-img-top"
+                                 src="http://placehold.it/500x500" alt="image produit">
+                        </a>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h2 class="card-title">{{ product.title }} - {{ product.price }}€</h2>
+                        <p class="card-text">{{ product.description|slice(0, 50)~"..." }}</p>
+                        <a href="{{ path('app_product_read', {'id':product.id}) }}" class="btn btn-primary">Lire
+                            la
+                            suite &rarr;</a>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user or is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_product_delete', {'id':product.id, 'token':token}) }}"
+                               class="btn btn-danger">Supprimer</a>
+                        {% endif %}{% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user %}|
+                            <a href="{{ path('app_product_update', {'id':product.id}) }}" class="btn btn-info">Modifier</a>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-muted">
+                        Posté le {{ product.date|date('d/m/Y') }}
+                        par {% if product.author %}{{ product.author.firstName }} {{ product.author.lastname }} {% endif %}
+                        {% if product.categories|length > 0 %}
+                            <br>Catégories : {% for category in product.categories %}|
+                            <a
+                            href="{{ path('app_product_bycat', {'id':category.id}) }}">{{ category.name }} </a>{% endfor %}{% endif %}
+                    </div>
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <h3>Vous n'avez aucun article en ligne</h3>
+
+        {% endif %}
+    </div>
+
+{% endblock %}

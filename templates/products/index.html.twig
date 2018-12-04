@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits{% endblock %}
+
+{% block body %}
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-8">
+
+                <h1 class="my-4">Tous les produits</h1>
+
+                {% if is_granted('ROLE_USER') %}
+                    <a href="{{ path('app_product_add') }}" class="btn btn-info mb-1">Ajouter</a>
+                {% endif %}
+
+
+                {% if products|length > 0 %}
+
+
+                    {% for product in products %}
+                        {% set token = csrf_token('delete_product') %}
+
+                        <!-- Blog Post -->
+                        <div class="card mb-4">
+                            {% if product.image %}
+                                <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                                    <img style="height: 500px; width: 500px" class="card-img-top"
+                                         src="{{ asset(image_path ~ product.image) }}" alt="image produit">
+                                </a>
+                            {% else %}
+                                <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                                    <img style="height: 500px; width: 500px" class="card-img-top"
+                                         src="http://placehold.it/500x500" alt="image produit">
+                                </a>
+                            {% endif %}
+
+                            <div class="card-body">
+                                <h2 class="card-title">{{ product.title }} - {{ product.price }}€</h2>
+                                <p class="card-text">{{ product.description|slice(0, 50)~"..." }}</p>
+                                <a href="{{ path('app_product_read', {'id':product.id}) }}" class="btn btn-primary">Lire
+                                    la
+                                    suite &rarr;</a>
+                                {% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user or is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('app_product_delete', {'id':product.id, 'token':token}) }}"
+                                       class="btn btn-danger">Supprimer</a>
+                                {% endif %}{% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user %}|
+                                    <a href="{{ path('app_product_update', {'id':product.id}) }}" class="btn btn-info">Modifier</a>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer text-muted">
+                                Posté le {{ product.date|date('d/m/Y') }}
+                                {% if product.author %}par <a
+                                        href="{{ path('app_security_profile', {"id":product.author.id}) }}">{{ product.author.firstName }} {{ product.author.lastname }}</a> {% endif %}
+                                {% if product.categories|length > 0 %}
+                                    <br>Catégories : {% for category in product.categories %}|
+                                    <a
+                                    href="{{ path('app_product_bycat', {'id':category.id}) }}">{{ category.name }} </a>{% endfor %}{% endif %}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                    {% if pag is defined %}
+
+                    {% else %}
+                        <!-- Pagination -->
+                        <div class="navigation">
+                            {{ knp_pagination_render(products) }}
+                        </div>
+                    {% endif %}
+
+
+                {% else %}
+
+                    <h3>Aucun produit ne correspond à votre recherche</h3>
+
+                {% endif %}
+
+
+            </div>
+            <div class="col-md-4">
+
+                <!-- Categories Widget -->
+                <div class="card my-4">
+                    <h5 class="card-header">Categories</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for category in categories %}
+                                <div class="col-sm-6">
+
+                                    <a href="{{ path('app_product_bycat', {'id':category.id}) }}">{{ category.name }}</a>
+                                </div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                {% include('navbar/side.html.twig') %}
+
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

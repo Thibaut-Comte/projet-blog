@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block body %}
+
+    {% set tokenComment = csrf_token('delete_comment') %}
+    {% set tokenProduct = csrf_token('delete_product') %}
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Post Content Column -->
+            <div class="col-lg-8">
+
+                <!-- Title -->
+                <h1 class="mt-4">{{ product.title }}</h1>
+
+                <h3>{{ product.price }}€</h3>
+
+                <!-- Author -->
+                <p class="lead">
+                    par
+                    <a href="{{ path('app_security_profile', {"id":product.author.id}) }}">{{ product.author.firstname }}</a>
+                </p>
+                <hr>
+
+                <!-- Date/Time -->
+                <p>
+                    Posté le : {{ product.date|date('d/m/Y') }}
+                    {% if product.author == app.user or is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_product_delete', {'id':product.id, 'token':tokenProduct}) }}"
+                           class="btn btn-danger">Supprimer</a>
+                    {% endif %}{% if product.author == app.user %}|
+                    <a href="{{ path('app_product_update', {'id':product.id}) }}" class="btn btn-secondary">Modifier</a>
+                    {% endif %}<br>
+                    {% if product.categories %}Categories : {% for category in product.categories %}| <a
+                            href="{{ path('app_product_bycat', {'id':category.id}) }}">{{ category.name }}</a> {% endfor %}{% endif %}
+                </p>
+
+                <hr>
+
+                <!-- Preview Image -->
+                {% if product.image %}
+                    <img style="width: 500px; height: 250px" class="img-fluid rounded"
+                         src="{{ asset(image_path~product.image) }}" alt="">
+                {% else %}
+                    <img class="img-fluid rounded" src="http://placehold.it/500x250" alt="">
+                {% endif %}
+                <hr>
+
+                <!-- Post Content -->
+                <div style="word-wrap: break-word" class="container"> {{ product.description }}</div>
+
+
+                <hr>
+
+                {% if is_granted('ROLE_USER') %}
+                    <!-- Comments Form -->
+                    <div id="comment" class="card my-4">
+                        <h5 class="card-header">Laisser un commentaire:</h5>
+                        <div class="card-body">
+                            {{ form_start(comment) }}
+
+                            {{ form_widget(comment) }}
+
+                            <button class="btn btn-success" type="submit">Envoyer</button>
+
+                            {{ form_end(comment) }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Single Comment -->
+                {% for comment in comments %}
+
+                    <div class="media mb-4">
+                        {% if comment.user.image %}
+                            <img style="width: 50px; height: 50px" class="d-flex mr-3 rounded-circle"
+                                 src="{{ asset(image_path~comment.user.image) }}" alt="">
+                        {% else %}
+                            <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
+                        {% endif %}
+                        <div class="media-body">
+                            <h5 class="mt-0"><a
+                                        href="{{ path('app_security_profile', {"id":comment.user.id}) }}">{{ comment.user.firstname }}</a>
+                                <small>- le {{ comment.date|date('d/m/Y') }}</small>
+                            </h5>
+                            {% if comment.user == app.user or is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_comment_delete', {'id': comment.id, 'token': tokenComment}) }}"
+                                   class="btn btn-danger">Supprimer</a>
+                            {% endif %}{% if comment.user == app.user %}|
+                                <a href="{{ path('app_comment_update', {'id': comment.id}) }}#comment"
+                                   class="btn btn-secondary">Modifier</a>
+                                <br>
+                            {% endif %}
+                            {{ comment.text }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                {% include('navbar/side.html.twig') %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

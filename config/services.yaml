@@ -4,7 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: 'en'
+    locale: 'fr'
+    email_admin: '%env(APP_ADMIN_EMAIL)%'
+    email_from: '%env(APP_FROM_EMAIL)%'
+    images_directory: '%kernel.project_dir%/public/uploads/image'
+    image_path: 'uploads/image/'
 
 services:
     # default configuration for services in *this* file
@@ -22,10 +26,18 @@ services:
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
+    # as action arguments even if you don't extend any products controller class
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Email\ContactMailer:
+        $emailAdmin: '%email_admin%'
+        $emailFrom: '%email_from%'
+
+    App\Upload\FileUploader:
+        arguments:
+            $targetDirectory: '%images_directory%'

@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block body %}
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-lg-8">
+
+                <h1 class="my-4">Profil utilisateur</h1>
+
+                {% if user.image %}
+                    <img style="width: 150px;height:  150px; margin-left: 43%"
+                         src="{{ asset(image_path ~ user.image) }}" alt="profil picture">
+                {% else %}
+                    <img style="width: 150px;height:  150px; margin-left: 43%" src="http://placehold.it/150x150"
+                         alt="avatar">
+                {% endif %}
+                <div class="row">
+                    <div class="col-sm-6">
+                        Nom : {{ user.firstName }}<br>
+                        Email : {{ user.username }}
+                    </div>
+                    <div class="col-sm-6">
+                        Prénom : {{ user.lastName }}
+                    </div>
+                </div>
+
+                <br>
+                <h3 style="text-align: center">Produits de l'utilisateur</h3>
+
+
+                {% if user.products|length > 0 %}
+
+
+                    {% for product in user.products|sort %}
+                        {% set token = csrf_token('delete_product') %}
+
+                        <!-- Blog Post -->
+                        <div class="card mb-4">
+                            {% if product.image %}
+                                <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                                    <img style="height: 500px; width: 500px" class="card-img-top"
+                                         src="{{ asset(image_path ~ product.image) }}" alt="image produit">
+                                </a>
+                            {% else %}
+                                <a href="{{ path('app_product_read', {"id":product.id}) }}">
+                                    <img style="height: 500px; width: 500px" class="card-img-top"
+                                         src="http://placehold.it/500x500" alt="image produit">
+                                </a>
+                            {% endif %}
+
+                            <div class="card-body">
+                                <h2 class="card-title">{{ product.title }} - {{ product.price }}€</h2>
+                                <p class="card-text">{{ product.description|slice(0, 50)~"..." }}</p>
+                                <a href="{{ path('app_product_read', {'id':product.id}) }}" class="btn btn-primary">Lire
+                                    la
+                                    suite &rarr;</a>
+                                {% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user or is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('app_product_delete', {'id':product.id, 'token':token}) }}"
+                                       class="btn btn-danger">Supprimer</a>
+                                {% endif %}{% if is_granted('IS_AUTHENTICATED_FULLY') and product.author == app.user %}|
+                                    <a href="{{ path('app_product_update', {'id':product.id}) }}" class="btn btn-info">Modifier</a>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer text-muted">
+                                Posté le {{ product.date|date('d/m/Y') }}
+                                par {% if product.author %}{{ product.author.firstName }} {{ product.author.lastname }} {% endif %}
+                                {% if product.categories|length > 0 %}
+                                    <br>Catégories : {% for category in product.categories %}|
+                                    <a
+                                    href="{{ path('app_product_bycat', {'id':category.id}) }}">{{ category.name }} </a>{% endfor %}{% endif %}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                    {% if pag is defined %}
+
+                    {% else %}
+                        <!-- Pagination -->
+                        <div class="navigation">
+                            {{ knp_pagination_render(user.products) }}
+                        </div>
+                    {% endif %}
+
+
+                {% else %}
+
+                    <h3>Cet utilisateur n'a pas encore mis en vente de produits</h3>
+
+                {% endif %}
+
+
+            </div>
+
+            <div class="col-lg-4">
+                {% include'navbar/side.html.twig' %}
+            </div>
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

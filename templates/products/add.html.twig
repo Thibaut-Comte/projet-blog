@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+{% block title %}Ajouter un produit{% endblock %}
+{% block body %}
+
+    <h1 style="text-align: center">Produit</h1>
+
+    <div class="container">
+        <div class="form-group">
+            {{ form_start(form) }}
+
+            {{ form_errors(form) }}
+
+            <div class="row">
+                <div class="col-sm-6">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title) }}
+                    {{ form_errors(form.title) }}
+                </div>
+                <div class="col-sm-6">
+                    {{ form_label(form.price) }}
+                    {{ form_widget(form.price) }}
+                    {{ form_errors(form.price) }}
+                </div>
+            </div>
+
+            {{ form_label(form.image) }}
+            {{ form_widget(form.image) }}
+            {{ form_errors(form.image) }}
+
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description) }}
+            {{ form_errors(form.description) }}
+
+            {{ form_label(form.categories) }}
+            {{ form_widget(form.categories) }}
+            {{ form_errors(form.categories) }}
+
+            <button class="btn btn-success mt-1">Envoyer</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block javascript %}
+{{ parent() }}
+<script>
+        $('#product_image').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.custom-file-label').addClass('selected').html(fileName);
+        });
+    </script>
+{% endblock %}
