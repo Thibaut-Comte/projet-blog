@@ -11,12 +11,15 @@
 
             <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
             <label for="inputUserName" class="sr-only">Email</label>
-            <input type="text" value="{{ last_username }}" name="username" id="inputUserName" class="form-control mb-1" placeholder="Email" required autofocus>
+            <input type="text" value="{{ last_username }}" name="username" id="inputUserName" class="form-control mb-1"
+                   placeholder="Email" required autofocus>
             <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+            <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password"
+                   required>
 
             <input type="hidden" name="_csrf_token"
                    value="{{ csrf_token('authenticate') }}">
+
 
             {#
                 Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.

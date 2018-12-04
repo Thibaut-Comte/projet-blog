@@ -63,8 +63,7 @@ class SecurityController extends AbstractController
             $encoded = $encoder->encodePassword($user, $user->getRawPassword());
             $user->setPassword($encoded);
 
-            if ($user->getImage())
-            {
+            if ($user->getImage()) {
                 $file = $user->getImage();
                 $fileName = $fileUploader->upload($file);
                 $user->setImage($fileName);
@@ -100,8 +99,7 @@ class SecurityController extends AbstractController
                 $user->setPassword($encoded);
             }
 
-            if ($user->getImage())
-            {
+            if ($user->getImage()) {
                 $file = $user->getImage();
                 $fileName = $fileUploader->upload($file);
                 $user->setImage($fileName);
@@ -128,40 +126,44 @@ class SecurityController extends AbstractController
     {
         $token = $request->query->get('token');
 
-        if (!$this->isCsrfTokenValid('delete_user', $token))
-        {
+        if (!$this->isCsrfTokenValid('delete_user', $token)) {
             return $this->createAccessDeniedException();
         }
 
+
         $em = $this->getDoctrine()->getManager();
 
-        $comments = $em->getRepository(Comment::class)->findBy(
-            ['product' => $user]
-        );
+        $comments = $user->getComments();
 
-        if ($user->getImage())
-        {
+        if ($user->getImage()) {
             $fileUploader->removeFile($user->getImage());
         }
 
-        foreach ($user->getProducts() as $product)
-        {
-            foreach ($comments as $comment)
-            {
+        foreach ($comments as $comment) {
+
+            $em->remove($comment);
+
+        }
+
+        foreach ($user->getProducts() as $product) {
+            foreach ($product->getComments() as $comment) {
                 $em->remove($comment);
             }
             $em->remove($product);
         }
 
-        $em->remove($user);
+        //Bug pour redirection
+//        $em->remove($user);
+
+        $user->setIsDelete(true);
         $em->flush();
 
-        $this->addFlash('success', 'Compte supprimé avec succès.');
-        $request->getSession()->invalidate();
-        $tokenInterface->setToken('test', null);
+        $this->addFlash('success', 'Votre compte à bien été supprimer.');
+//        $request->getSession()->invalidate();
+//        $tokenInterface->setToken('test', null);
 
 
-        return $this->redirectToRoute('app_product_index');
+        return $this->redirectToRoute('app_logout');
     }
 
     /**

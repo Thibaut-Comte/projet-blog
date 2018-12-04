@@ -46,8 +46,12 @@
         {{ form_widget(form.rawPassword) }}
         {{ form_errors(form.rawPassword) }}
 
+        {{ form_label(form.captchaCode) }}
+        {{ form_widget(form.captchaCode) }}
+        {{ form_errors(form.captchaCode) }}
 
-        <p class="text-center">
+
+        <p class="text-center mt-3">
             <button class="btn btn-success">
                 <span class="fa fa-sign-in"></span> Modifier
             </button>

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContext;
+use Captcha\Bundle\CaptchaBundle\Validator\Constraints as CaptchaAssert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -113,9 +114,22 @@ class User implements UserInterface
      */
     private $image;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDelete;
+
+    /**
+     * @CaptchaAssert\ValidCaptcha(
+     *      message = "CAPTCHA validation failed, try again."
+     * )
+     */
+    protected $captchaCode;
+
     public function __construct()
     {
         $this->role = "ROLE_USER";
+        $this->isDelete = false;
         $this->products = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
@@ -131,6 +145,22 @@ class User implements UserInterface
     public function getImage()
     {
         return $this->image;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCaptchaCode()
+    {
+        return $this->captchaCode;
+    }
+
+    /**
+     * @param mixed $captchaCode
+     */
+    public function setCaptchaCode($captchaCode): void
+    {
+        $this->captchaCode = $captchaCode;
     }
 
     /**
@@ -301,5 +331,21 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         $this->rawPassword = null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisDelete()
+    {
+        return $this->isDelete;
+    }
+
+    /**
+     * @param mixed $isDelete
+     */
+    public function setIsDelete($isDelete): void
+    {
+        $this->isDelete = $isDelete;
     }
 }

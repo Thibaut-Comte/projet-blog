@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Captcha\Bundle\CaptchaBundle\Form\Type\CaptchaType;
 
 class UserType extends AbstractType
 {
@@ -35,7 +36,6 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Mot de passe (bis)'],
                 'required' => $options["required_password"]
             ])
-
             ->add('firstName', TextType::class, array(
                 'label' => "Prénom",
                 'attr' => array(
@@ -52,6 +52,9 @@ class UserType extends AbstractType
                 'label' => "avatar",
                 'required' => false,
                 'data_class' => null
+            ))
+            ->add('captchaCode', CaptchaType::class, array(
+                'captchaConfig' => 'ExampleCaptcha'
             ));
 
 

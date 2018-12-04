@@ -68,10 +68,33 @@ class Product
      */
     private $image;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="product")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->date = new \DateTime();
         $this->categories = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param mixed $comments
+     */
+    public function setComments($comments): void
+    {
+        $this->comments = $comments;
     }
 
     /**
@@ -192,6 +215,24 @@ class Product
     public function setDate($date): void
     {
         $this->date = $date;
+    }
+
+    public function addComment(Comment $comment)
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment)
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+        }
+
+        return $this;
     }
 
 }

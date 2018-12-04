@@ -40,7 +40,7 @@
                             {% endif %}
 
                             <div class="card-body">
-                                <h2 class="card-title">{{ product.title }} - {{ product.price }}€</h2>
+                                <h2 class="card-title">{{ product.title }} - {{ product.price|number_format(2, ',', '.') }}€</h2>
                                 <p class="card-text">{{ product.description|slice(0, 50)~"..." }}</p>
                                 <a href="{{ path('app_product_read', {'id':product.id}) }}" class="btn btn-primary">Lire
                                     la

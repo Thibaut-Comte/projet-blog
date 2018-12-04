@@ -61,8 +61,7 @@ class productController extends AbstractController
 
             try {
 
-                if ($product->getImage())
-                {
+                if ($product->getImage()) {
                     $file = $product->getImage();
                     $fileName = $fileUploader->upload($file);
                     $product->setImage($fileName);
@@ -80,7 +79,8 @@ class productController extends AbstractController
 
             } catch (\Exception $e) {
                 $this->addFlash('error', "Une erreur est survenue");
-            }$em = $this->getDoctrine()->getManager();
+            }
+            $em = $this->getDoctrine()->getManager();
 
             $em->persist($product);
             $em->flush();
@@ -103,22 +103,23 @@ class productController extends AbstractController
     public function read(Product $product, Request $request)
     {
         $comment = new Comment();
-        $em = $this->getDoctrine()->getManager();
 
-        $repoComment = $em->getRepository(Comment::class);
-
-        $comments = $repoComment->findBy([
-            'product' => $product,
-        ]);
+        if ($product->getComments()) {
+            $comments = $product->getComments();
+        }
 
         $form = $this->createForm(CommentType::class, $comment);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getUser();
             $comment->setUser($user);
             $comment->setProduct($product);
+
+            if ($comment) {
+                $product->addComment($comment);
+            }
+
             $user->addComment($comment);
 
             $em = $this->getDoctrine()->getManager();
@@ -148,10 +149,8 @@ class productController extends AbstractController
         $form = $this->createForm(ProductType::class, $product);
 
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
-            if ($product->getImage())
-            {
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($product->getImage()) {
                 $file = $product->getImage();
                 $fileName = $fileUploader->upload($file);
                 $product->setImage($fileName);
@@ -161,7 +160,7 @@ class productController extends AbstractController
 
             $this->addFlash('success', 'Produit modifié avec succès');
 
-            $this->redirectToRoute('app_product_read', array(
+            return $this->redirectToRoute('app_product_read', array(
                 'id' => $product->getId()
             ));
         }
@@ -180,8 +179,7 @@ class productController extends AbstractController
 
         $token = $request->query->get('token');
 
-        if (!$this->isCsrfTokenValid('delete_product', $token))
-        {
+        if (!$this->isCsrfTokenValid('delete_product', $token)) {
             return $this->createAccessDeniedException();
         }
 
@@ -191,13 +189,11 @@ class productController extends AbstractController
             ['product' => $product]
         );
 
-        if ($product->getImage())
-        {
+        if ($product->getImage()) {
             $fileUploader->removeFile($product->getImage());
         }
 
-        foreach ($comments as $comment)
-        {
+        foreach ($comments as $comment) {
             $em->remove($comment);
         }
         $em->remove($product);
