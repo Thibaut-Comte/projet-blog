@@ -41,10 +41,9 @@ class ProductType extends AbstractType
             ->add('price', NumberType::class, array(
                 'label' => 'Prix'
             ))
-            ->add('image', FileType::class, array(
+            ->add('rawImage', FileType::class, array(
                 'label' => 'Image',
-                'required' => false,
-                'data_class' => null
+                'required' => false
             ))
             ->add('categories', EntityType::class, array(
                 'label' => "Categories",

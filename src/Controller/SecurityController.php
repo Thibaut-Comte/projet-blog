@@ -63,12 +63,11 @@ class SecurityController extends AbstractController
             $encoded = $encoder->encodePassword($user, $user->getRawPassword());
             $user->setPassword($encoded);
 
-            if ($user->getImage()) {
-                $file = $user->getImage();
+            if ($user->getRawImage()) {
+                $file = $user->getRawImage();
                 $fileName = $fileUploader->upload($file);
                 $user->setImage($fileName);
             }
-
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
@@ -84,31 +83,42 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/account", methods={"GET", "POST"}, requirements={"id": "\d+"})
+     * @Route("/account")
      */
-    public function account(FileUploader $fileUploader, Request $request, UserPasswordEncoderInterface $encoder, User $user): Response
+    public function account(FileUploader $fileUploader, Request $request, UserPasswordEncoderInterface $encoder): Response
     {
+        $user = $this->getUser();
 
         $form = $this->createForm(UserType::class, $user, array(
             'required_password' => false
         ));
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($user->getRawPassword()) {
-                $encoded = $encoder->encodePassword($user, $user->getRawPassword());
-                $user->setPassword($encoded);
+            try {
+                if ($user->getRawPassword()) {
+                    $encoded = $encoder->encodePassword($user, $user->getRawPassword());
+                    $user->setPassword($encoded);
+                }
+
+                if ($user->getRawImage()) {
+                    if ($user->getImage())
+                    {
+                        $fileUploader->removeFile($user->getImage());
+                    }
+                    $file = $user->getRawImage();
+                    $fileName = $fileUploader->upload($file);
+                    $user->setImage($fileName);
+                    $user->setRawImage(null);
+                }
+
+                $this->getDoctrine()->getManager()->flush();
+                $this->addFlash('success', 'Votre compte a bien été modifié.');
+
+            } catch (\Exception $e) {
+                $this->addFlash('danger', "Une erreur est survenue");
             }
 
-            if ($user->getImage()) {
-                $file = $user->getImage();
-                $fileName = $fileUploader->upload($file);
-                $user->setImage($fileName);
-            }
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($user);
-            $em->flush();
-
-            $this->addFlash('success', 'Votre compte a bien été modifié.');
             return $this->redirectToRoute('app_security_account', array(
                 'id' => $user->getId(),
             ));

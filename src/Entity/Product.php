@@ -61,10 +61,6 @@ class Product
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\File(
-     *     maxSize="4M",
-     *     mimeTypes={"image/jpg", "image/png", "image/jpeg"}
-     * )
      */
     private $image;
 
@@ -74,11 +70,35 @@ class Product
      */
     private $comments;
 
+    /**
+     * @Assert\File(
+     *     maxSize="4M",
+     *     mimeTypes={"image/jpg", "image/png", "image/jpeg"}
+     * )
+     */
+    private $rawImage;
+
     public function __construct()
     {
         $this->date = new \DateTime();
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRawImage()
+    {
+        return $this->rawImage;
+    }
+
+    /**
+     * @param mixed $rawImage
+     */
+    public function setRawImage($rawImage): void
+    {
+        $this->rawImage = $rawImage;
     }
 
     /**

@@ -78,7 +78,7 @@ class productController extends AbstractController
 
 
             } catch (\Exception $e) {
-                $this->addFlash('error', "Une erreur est survenue");
+                $this->addFlash('danger', "Une erreur est survenue");
             }
             $em = $this->getDoctrine()->getManager();
 
@@ -150,8 +150,12 @@ class productController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($product->getImage()) {
-                $file = $product->getImage();
+            if ($product->getRawImage()) {
+                if ($product->getImage())
+                {
+                    $fileUploader->removeFile($product->getImage());
+                }
+                $file = $product->getRawImage();
                 $fileName = $fileUploader->upload($file);
                 $product->setImage($fileName);
             }

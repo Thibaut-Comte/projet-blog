@@ -32,6 +32,14 @@ class User implements UserInterface
     private $rawPassword;
 
     /**
+     * @Assert\File(
+     *     maxSize="4M",
+     *     mimeTypes={"image/jpg", "image/png", "image/jpeg"}
+     * )
+     */
+    private $rawImage;
+
+    /**
      * @Assert\Callback()
      */
     public function assertIsValid(ExecutionContext $context)
@@ -59,6 +67,22 @@ class User implements UserInterface
     public function setRawPassword(?string $rawPassword): void
     {
         $this->rawPassword = $rawPassword;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRawImage()
+    {
+        return $this->rawImage;
+    }
+
+    /**
+     * @param mixed $rawImage
+     */
+    public function setRawImage($rawImage): void
+    {
+        $this->rawImage = $rawImage;
     }
 
     /**
@@ -107,10 +131,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Assert\File(
-     *     maxSize="4M",
-     *     mimeTypes={"image/jpg", "image/png", "image/jpeg"}
-     * )
      */
     private $image;
 
@@ -331,6 +351,7 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         $this->rawPassword = null;
+        $this->rawImage = null;
     }
 
     /**

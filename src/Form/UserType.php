@@ -48,10 +48,9 @@ class UserType extends AbstractType
                     'placeholder' => "Nom"
                 )
             ))
-            ->add('image', FileType::class, array(
+            ->add('rawImage', FileType::class, array(
                 'label' => "avatar",
-                'required' => false,
-                'data_class' => null
+                'required' => false
             ))
             ->add('captchaCode', CaptchaType::class, array(
                 'captchaConfig' => 'ExampleCaptcha'
