@@ -4,6 +4,8 @@ COMTE Thibaut
 #SQL a la racine
 
 #Utilisateurs
+
+Username - Password
 admin@test.com - test
 tibo@gmail.com - tiago
 bidon@gmail.com - bidon
