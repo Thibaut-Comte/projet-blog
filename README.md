@@ -1,4 +1,4 @@
-# projet-ecommerce
+# projet-ecommerce (renommer entre temps)
 COMTE Thibaut
 
 #SQL a la racine
